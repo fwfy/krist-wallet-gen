@@ -24,6 +24,18 @@ KWG_THREADS=1 node gen.js test 4 // Same as the first example - but will only sp
 const crypto = require("crypto");
 const cluster = require('cluster');
 const os = require('os');
+const process = require('process');
+const fs = require('fs');
+const clear = `\r\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\r`;
+let num_workers = process.env.KWG_THREADS ? Number(process.env.KWG_THREADS) : numCPUs;
+let report_interval = process.env.KWG_REPORT_INTERVAL ? Number(process.env.KWG_REPORT_INTERVAL) : 100;
+let bytes = process.env.KWG_BYTES ? Number(process.env.KWG_BYTES) : 32;
+let threads = [];
+let target = Number(process.argv[3]?process.argv[3]:1);
+let progress = 0;
+let last_perf = Date.now();
+let perf_data = [];
+let last_perf_line = "";
 let numCPUs
 try {
 	numCPUs = os.availableParallelism();
@@ -31,16 +43,6 @@ try {
 	if(cluster.isPrimary) console.log("[main] Notice: os.availableParallelism() produced an error, guessing how many threads to run. You're probably running this script with an outdated version of NodeJS.");
 	numCPUs = os.cpus().length;
 }
-const process = require('process');
-const fs = require('fs');
-let num_workers = process.env.KWG_THREADS ? Number(process.env.KWG_THREADS) : numCPUs;
-let threads = [];
-let target = Number(process.argv[3]?process.argv[3]:1);
-let progress = 0;
-let last_perf = Date.now();
-let perf_data = [];
-let last_perf_line = "";
-let report_interval = process.env.KWG_REPORT_INTERVAL ? Number(process.env.KWG_REPORT_INTERVAL) : 100;
 
 function sha256(string) {
 	return crypto.createHash('sha256').update(string).digest('hex');
@@ -78,20 +80,19 @@ function makeV2Address(chain, key) {
 
 let sanity = makeV2Address("k","abcdefghijklmnopqrstuvwxyz");
 if(sanity !== "k8860qxhvw") {
-	// console.log(`SANITY CHECK FAILED! fix your fucking shit dumbass (expected "k8860qxhvw", got "${sanity}".)`);
 	if(cluster.isPrimary) {
 		process.exit(1);
 	} else {
 		process.send(JSON.stringify({
 			intent: "fatal_error",
-			msg: `SANITY CHECK FAILED! fix your fucking shit dumbass (expected "k8860qxhvw", got "${sanity}".)`,
+			msg: `SANITY CHECK FAILED! (expected "k8860qxhvw", got "${sanity}".)`,
 			pid: process.pid
 		}))
 	}
 }
 
 function logger(msg) {
-	process.stdout.write(`\r\t\t\t\t\t\t\t\t\t\t\t\t\r${msg}\n${last_perf_line}`);
+	process.stdout.write(`${clear}${msg}\n${last_perf_line}`);
 }
 
 function handleMessage(e) {
@@ -136,7 +137,7 @@ function handleMessage(e) {
 					last_perf = Date.now();
 					perf_data = [];
 					last_perf_line = `Speed: approximately ${Number(avg*num_workers).toFixed(2)} checks per second.`
-					process.stdout.write(`\r\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\r${last_perf_line}`);
+					process.stdout.write(`${clear}${last_perf_line}`);
 				}
 				break;
 		}
@@ -203,7 +204,7 @@ function threadWork(search) {
 	let start_time = Date.now();
 	while(true) {
 		counter++;
-		let a = `${crypto.randomBytes(32).toString('hex')}`;
+		let a = `${crypto.randomBytes(bytes).toString('hex')}`;
 		let b = makeV2Address("k", a);
 		let result = false;
 		for(const term of search) {
