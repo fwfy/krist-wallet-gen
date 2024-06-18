@@ -9,7 +9,7 @@ Some aspects of KWG can be configured by setting environment variables. As of ri
 
 ### KWG_THREADS
 Setting this environment variable will force KWG to use the number of threads you specify.
-One NodeJS process gets created for each thread, so be careful setting it to high, or you could end up running out of RAM.
+One NodeJS process gets created for each thread, so be careful setting it too high, or you could end up running out of RAM.
 
 Default behavior is to call `os.availableParallelism()` (or `os.cpus().length` if that fails - e.g. on older NodeJS versions) to determine how many threads to run. 
 This means KWG will by default use 100% of all your CPU cores. You might not want this if you're running it in the background of your desktop PC for extended amounts of time.
