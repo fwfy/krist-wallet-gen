@@ -15,9 +15,7 @@ node gen.js test,foo 4 // This will generate 4 Krist wallets and passwords that 
 This program is multithreaded. By default, it will use one thread per CPU core.
 If you wish to override this behavior, you can do so using the KWG_THREADS environment variable.
 You can use this feature to either scale down the number of threads, allowing this program to run in the background,
-or you can force it to use more workers than you have available CPU cores.
-I have no idea if this has the potential to make it faster, but I guarantee setting way too many threads
-will either just run you out of memory, or will make your system crawl to a halt.
+or you can force it to use more workers than you have available CPU cores. Be cautious when doing the latter, as it provides diminishing returns, or sometimes none at all.
 
 Example:
 KWG_THREADS=1 node gen.js test 4 // Same as the first example - but will only spawn one worker thread.
