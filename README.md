@@ -18,3 +18,7 @@ This means KWG will by default use 100% of all your CPU cores. You might not wan
 This environment variable changes how many checks to perform before worker threads send performance updates back to the main thread. By default, it is set to 100.
 This can be useful for getting more performance on systems where you have many cores, but where each individual core might not be too fast. Or if you're running an insane amount of threads for some reason.
 Changing it should in theory decrease the load on the main thread as it won't have to process performance updates as often, though setting it too high can make the speed display either update slowly, or not at all.
+
+### KWG_BYTES
+This changes the amount of bytes that KWG should use in the generation of wallet password candidates. By default it is set to 32.
+You can either lower it for a (unconfirmed) speed increase, or increase it for security.
