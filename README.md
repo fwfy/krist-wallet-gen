@@ -5,7 +5,7 @@ Multi-threaded NodeJS program to find Krist addresses with specific endings.
 Simply run the program and it will print out the help text, which gives you all the information you need in order to use the program.
 
 ## Additional Tuning Variables
-Some aspects of KWG can be configured by setting environment variables. As of right now, there's only two, and they are documented below.
+Some aspects of KWG can be configured by setting environment variables. As of right now, there's only three, and they are documented below.
 
 ### KWG_THREADS
 Setting this environment variable will force KWG to use the number of threads you specify.
