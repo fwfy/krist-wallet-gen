@@ -27,7 +27,7 @@ const os = require('os');
 const process = require('process');
 const fs = require('fs');
 const clear = `\r\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\r`;
-let num_workers = process.env.KWG_THREADS ? Number(process.env.KWG_THREADS) : numCPUs;
+
 let report_interval = process.env.KWG_REPORT_INTERVAL ? Number(process.env.KWG_REPORT_INTERVAL) : 100;
 let bytes = process.env.KWG_BYTES ? Number(process.env.KWG_BYTES) : 32;
 let threads = [];
@@ -36,13 +36,14 @@ let progress = 0;
 let last_perf = Date.now();
 let perf_data = [];
 let last_perf_line = "";
-let numCPUs
+let numCPUs;
 try {
 	numCPUs = os.availableParallelism();
 } catch(err) {
 	if(cluster.isPrimary) console.log("[main] Notice: os.availableParallelism() produced an error, guessing how many threads to run. You're probably running this script with an outdated version of NodeJS.");
 	numCPUs = os.cpus().length;
 }
+let num_workers = process.env.KWG_THREADS ? Number(process.env.KWG_THREADS) : numCPUs;
 
 function sha256(string) {
 	return crypto.createHash('sha256').update(string).digest('hex');
